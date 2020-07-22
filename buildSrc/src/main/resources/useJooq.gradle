@@ -1,0 +1,46 @@
+String jooqVersion = System.properties['jooqVersion']
+String jooqURL = System.properties['jooqURL']
+String jooqUser = System.properties['jooqUser']
+String jooqPassword = System.properties['jooqPassword']
+String jooqPackageName = System.properties['jooqPackageName']
+String generatorDatabaseIncludes = System.properties['generatorDatabaseIncludes']
+
+dependencies {
+    compile 'org.jooq:jooq'
+    jooqRuntime 'mysql:mysql-connector-java:6.0.3'
+}
+
+jooq {
+    version = jooqVersion
+    edition = 'OSS'
+    generateSchemaSourceOnCompilation = false
+    // groovy의 dynamic function이 kotlin에서는 구현하기가 어렵다.
+    // 따라서 useJooq.gradle을 따로 정의하고 이를 apply하는 방식으로 구현진행
+    bdp(sourceSets.main) {
+        jdbc {
+            url = jooqURL
+            user = jooqUser
+            password = jooqPassword
+        }
+        generator {
+            name = 'org.jooq.codegen.DefaultGenerator'
+            database {
+                name = 'org.jooq.meta.mysql.MySQLDatabase'
+                inputSchema = 'jooq_example'
+                includes = generatorDatabaseIncludes
+                excludes = ''
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = true
+                fluentSetters = true
+            }
+            target {
+                packageName = jooqPackageName
+                directory = 'src/main/kotlin'
+            }
+        }
+    }
+}
