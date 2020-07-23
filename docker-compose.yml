@@ -20,6 +20,24 @@ services:
       # Where our data will be persisted
     volumes:
       - spring-jooq-example-mysql:/var/lib/mysql
+
+  controller:
+    image: ngrinder/controller
+    restart: always
+    ports:
+      - "30010:80"
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+    volumes:
+      - spring-jooq-example-ngrinder:/opt/ngrinder-controller
+
+  agent:
+    image: ngrinder/agent
+    restart: always
+    links:
+      - controller
+
 # Names our volume
 volumes:
   spring-jooq-example-mysql:
+  spring-jooq-example-ngrinder:

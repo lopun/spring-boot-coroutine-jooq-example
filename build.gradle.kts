@@ -12,12 +12,11 @@ plugins {
   id(Plugin.kotlinSpring) version Ver.kotlin
   id(Plugin.springBoot) version Ver.springBoot apply false
   id(Plugin.springDependencyManagement) version Ver.springDependencyManagement apply false
-  id(Plugin.jooq) version "4.2" apply false
 }
 
 allprojects {
-  group = "kr.zigzag"
-  version = "0.0.2-SNAPSHOT"
+  group = "co.lopun"
+  version = "0.0.1-SNAPSHOT"
 
   repositories {
     mavenCentral()
@@ -36,7 +35,6 @@ subprojects {
   apply(plugin = Plugin.kotlinSpring)
   apply(plugin = Plugin.springDependencyManagement)
   apply(plugin = Plugin.springBoot)
-  apply(plugin = Plugin.jooq)
 
   @Suppress("UnstableApiUsage")
   configure<JavaPluginExtension> {
@@ -51,7 +49,6 @@ subprojects {
         jvmTarget = "11"
       }
       dependsOn(processResources)
-//      findByName("generateBdpJooqSchemaSource")?.apply { enabled = false }
     }
 
     withType<Test> {
@@ -71,8 +68,7 @@ subprojects {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(springBootDependencies())
-    implementation(springBoot("spring-boot-starter-web"))
-    implementation(springBoot("spring-boot-starter-jooq"))
+    implementation(springBoot("spring-boot-starter-webflux"))
     runtimeOnly(springBoot("spring-boot-devtools"))
     implementation(kotlinx("kotlinx-coroutines-core"))
     implementation(kotlinx("kotlinx-coroutines-reactor"))
