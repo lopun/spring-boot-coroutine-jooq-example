@@ -5,4 +5,5 @@ object Ver {
   const val jooq = "3.13.1"
   const val gson = "2.8.5"
   const val kotlinx = "1.3.8"
+  const val r2dbcMysqlDriver = "0.8.2.RELEASE"
 }

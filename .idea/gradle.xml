@@ -13,8 +13,9 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/subprojects" />
             <option value="$PROJECT_DIR$/subprojects/biz" />
+            <option value="$PROJECT_DIR$/subprojects/common" />
             <option value="$PROJECT_DIR$/subprojects/core" />
-            <option value="$PROJECT_DIR$/subprojects/gateway" />
+            <option value="$PROJECT_DIR$/subprojects/webflux_gateway" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

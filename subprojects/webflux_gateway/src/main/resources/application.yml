@@ -1,0 +1,43 @@
+server:
+  port: 30002
+  tomcat:
+    threads:
+      max: 30
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        data:
+          r2dbc: INFO
+
+spring:
+  profiles:
+    active: local
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    replica:
+      url: jdbc:log4jdbc:mysql://localhost:30001/jooq_example?serverTimezone=Asia/Seoul
+    master:
+      url: jdbc:log4jdbc:mysql://localhost:30001/jooq_example?serverTimezone=Asia/Seoul
+    username: sample_user
+    password: password
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 30
+      pool-name: hikari-test
+      idle-timeout: 60000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+custom:
+  r2dbc:
+    url:
+      master: "r2dbc:pool:mysql://sample_user:password@localhost:30001/jooq_example"
+      replica: "r2dbc:pool:mysql://sample_user:password@localhost:30001/jooq_example"
+
+
+

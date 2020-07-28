@@ -23,5 +23,9 @@ bootJar.enabled = false
 jar.enabled = true
 
 dependencies {
+  implementation(project(":subprojects:common"))
   implementation(springBoot("spring-boot-starter-jooq"))
+  implementation(springBoot("spring-boot-starter-data-r2dbc"))
+  // mysql driver
+  implementation(r2dbcMysqlDriver())
 }

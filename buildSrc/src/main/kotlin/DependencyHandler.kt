@@ -12,3 +12,5 @@ fun DependencyHandlerScope.gson(): String = "com.google.code.gson:gson:${Ver.gso
 fun DependencyHandlerScope.mysqlConnectorJava(): String = "mysql:mysql-connector-java"
 
 fun DependencyHandlerScope.kotlinx(module: String): String = "org.jetbrains.kotlinx:$module:${Ver.kotlinx}"
+
+fun DependencyHandlerScope.r2dbcMysqlDriver(): String = "dev.miku:r2dbc-mysql:${Ver.r2dbcMysqlDriver}"

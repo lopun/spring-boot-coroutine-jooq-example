@@ -1,6 +1,10 @@
 package co.lopun.core.config
 
 import com.zaxxer.hikari.HikariDataSource
+import io.r2dbc.pool.ConnectionPool
+import io.r2dbc.pool.ConnectionPoolConfiguration
+import io.r2dbc.spi.ConnectionFactories
+import io.r2dbc.spi.ConnectionFactory
 import org.jooq.ConnectionProvider
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
@@ -13,20 +17,36 @@ import org.springframework.boot.autoconfigure.jooq.SpringTransactionProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.data.r2dbc.core.DatabaseClient
+import org.springframework.data.r2dbc.core.DefaultReactiveDataAccessStrategy
+import org.springframework.data.r2dbc.core.ReactiveDataAccessStrategy
+import org.springframework.data.r2dbc.dialect.MySqlDialect
+import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import javax.sql.DataSource
 
+
+@EnableR2dbcRepositories
 @Configuration
-class JooqConfiguration {
+class DatabaseConfiguration {
+  /**
+   * == properties from application.yml ====================================
+   */
   @Value("\${spring.datasource.master.url}")
-  private lateinit var masterUrl: String
+  private lateinit var jdbcMasterUrl: String
 
   @Value("\${spring.datasource.master.url}")
-  private lateinit var replicaUrl: String
+  private lateinit var jdbcReplicaUrl: String
 
   @Value("\${spring.datasource.driver-class-name}")
-  private lateinit var commonDriverClassName: String
+  private lateinit var jdbcDriverClassName: String
+
+  @Value("\${custom.r2dbc.url.master}")
+  private lateinit var r2dbcMasterUrl: String
+
+  @Value("\${custom.r2dbc.url.replica}")
+  private lateinit var r2dbcReplicaUrl: String
 
   @Value("\${spring.datasource.username}")
   private lateinit var commonUserName: String
@@ -34,13 +54,16 @@ class JooqConfiguration {
   @Value("\${spring.datasource.password}")
   private lateinit var commonPassword: String
 
+  /**
+   * == jooq configuration ====================================
+   */
   @Primary
   @Bean
   fun dataSourceMaster(): DataSource = HikariDataSource().apply {
-    driverClassName = commonDriverClassName
+    driverClassName = jdbcDriverClassName
     username = commonUserName
     password = commonPassword
-    jdbcUrl = masterUrl
+    jdbcUrl = jdbcMasterUrl
   }
 
   @Primary
@@ -73,10 +96,10 @@ class JooqConfiguration {
 
   @Bean
   fun dataSourceReplica(): DataSource = HikariDataSource().apply {
-    driverClassName = commonDriverClassName
+    driverClassName = jdbcDriverClassName
     username = commonUserName
     password = commonPassword
-    jdbcUrl = replicaUrl
+    jdbcUrl = jdbcReplicaUrl
   }
 
   @Bean
@@ -101,5 +124,39 @@ class JooqConfiguration {
       .derive(transactionProviderReplica())
       .derive(SQLDialect.MYSQL)
     return DefaultDSLContext(configuration)
+  }
+
+  /**
+   * == r2dbc configuration ====================================
+   */
+
+  @Bean
+  fun reactiveDataAccessStrategy(): ReactiveDataAccessStrategy? {
+    return DefaultReactiveDataAccessStrategy(MySqlDialect())
+  }
+
+  @Bean
+  fun connectionFactoryMaster(): ConnectionFactory {
+    return ConnectionFactories.get(r2dbcMasterUrl)
+  }
+
+  @Bean
+  fun databaseClientMaster(): DatabaseClient {
+    return DatabaseClient.create(connectionFactoryMaster())
+  }
+
+  @Bean
+  fun connectionFactoryReplica(): ConnectionFactory = ConnectionPool(
+    ConnectionPoolConfiguration.builder()
+      .connectionFactory(ConnectionFactories.get(r2dbcReplicaUrl))
+      .initialSize(10)
+      .maxSize(100)
+      .validationQuery("SELECT 1")
+      .build()
+  )
+
+  @Bean
+  fun databaseClientReplica(): DatabaseClient {
+    return DatabaseClient.create(connectionFactoryReplica())
   }
 }

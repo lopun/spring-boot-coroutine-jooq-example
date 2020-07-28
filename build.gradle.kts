@@ -68,11 +68,12 @@ subprojects {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(springBootDependencies())
-    implementation(springBoot("spring-boot-starter-webflux"))
+    implementation(springBoot("spring-boot-starter-web"))
     runtimeOnly(springBoot("spring-boot-devtools"))
     implementation(kotlinx("kotlinx-coroutines-core"))
     implementation(kotlinx("kotlinx-coroutines-reactor"))
     implementation(kotlinx("kotlinx-coroutines-jdk8"))
+    implementation("org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16")
 
     implementation(gson())
     implementation(mysqlConnectorJava())

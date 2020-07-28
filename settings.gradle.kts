@@ -11,7 +11,8 @@ rootProject.name = "spring-boot-coroutine-jooq-example"
 
 include(
   "subprojects",
+  "subprojects:common",
   "subprojects:core",
   "subprojects:biz",
-  "subprojects:gateway"
+  "subprojects:webflux_gateway"
 )
